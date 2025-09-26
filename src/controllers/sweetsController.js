@@ -18,3 +18,13 @@ export const getAllSweets = async (req, res, next) => {
     next(err);
   }
 };
+
+export const searchSweets = async (req, res, next) => {
+  try {
+    const { name, category, minPrice, maxPrice } = req.query;
+    const sweets = await sweetsService.searchSweets({ name, category, minPrice, maxPrice });
+    return res.status(200).json(sweets);
+  } catch (err) {
+    next(err);
+  }
+};
