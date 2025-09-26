@@ -17,3 +17,14 @@ export const addSweet = async ({ name, category, price, quantity }) => {
     quantity: sweet.quantity
   };
 };
+
+export const getAllSweets = async () => {
+  const sweets = await Sweet.find().lean();
+  return sweets.map((s) => ({
+    id: s._id.toString(),
+    name: s.name,
+    category: s.category,
+    price: s.price,
+    quantity: s.quantity,
+  }));
+};
