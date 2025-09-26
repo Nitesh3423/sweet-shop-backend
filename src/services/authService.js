@@ -1,8 +1,6 @@
 import User from "../models/User.js";
 import bcrypt from "bcryptjs";
-import jwt from "jsonwebtoken";
-
-const JWT_SECRET = process.env.JWT_SECRET || "test_secret";
+import { generateToken } from "../utils/jwt.js";
 
 export const registerUser = async ({ username, password, email }) => {
   if (!username || !password) {
@@ -24,9 +22,7 @@ export const registerUser = async ({ username, password, email }) => {
   const user = new User({ username, password: hashed, email });
   await user.save();
 
-  const token = jwt.sign({ id: user._id, username: user.username }, JWT_SECRET, {
-    expiresIn: "7d"
-  });
+  const token = generateToken({ id: user._id, username: user.username });
 
   return { token, user: { id: user._id.toString(), username: user.username } };
 };
@@ -37,20 +33,22 @@ export const loginUser = async ({ username, password }) => {
     err.status = 400;
     throw err;
   }
+
   const user = await User.findOne({ username });
   if (!user) {
     const err = new Error("invalid credentials");
     err.status = 401;
     throw err;
   }
+
   const match = await bcrypt.compare(password, user.password);
   if (!match) {
     const err = new Error("invalid credentials");
     err.status = 401;
     throw err;
   }
-  const token = jwt.sign({ id: user._id, username: user.username }, JWT_SECRET, {
-    expiresIn: "7d"
-  });
+
+  const token = generateToken({ id: user._id, username: user.username });
+
   return token;
 };
