@@ -1,5 +1,6 @@
 import Sweet from "../models/Sweet.js";
 import { createError } from "../utils/errors.js";
+import { formatSweet, formatSweetsList } from "../utils/response.js";
 
 export const addSweet = async ({ name, category, price, quantity }) => {
   if (!name || !category || price == null || quantity == null) {
@@ -9,22 +10,10 @@ export const addSweet = async ({ name, category, price, quantity }) => {
   const sweet = new Sweet({ name, category, price, quantity });
   await sweet.save();
 
-  return {
-    id: sweet._id.toString(),
-    name: sweet.name,
-    category: sweet.category,
-    price: sweet.price,
-    quantity: sweet.quantity
-  };
+  return formatSweet(sweet);
 };
 
 export const getAllSweets = async () => {
   const sweets = await Sweet.find().lean();
-  return sweets.map((s) => ({
-    id: s._id.toString(),
-    name: s.name,
-    category: s.category,
-    price: s.price,
-    quantity: s.quantity,
-  }));
+  return formatSweetsList(sweets);
 };
