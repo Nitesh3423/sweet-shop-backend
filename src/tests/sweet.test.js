@@ -139,3 +139,56 @@ describe("Sweets API - Search", () => {
   });
 });
 
+// sweet crud
+describe("Sweets API - Update/Delete", () => {
+  let sweetId;
+
+  beforeAll(async () => {
+    // Add a sweet for testing
+    const res = await request(app)
+      .post("/api/sweets")
+      .set("Authorization", `Bearer ${token}`)
+      .send({
+        name: "Ladoo",
+        category: "Indian",
+        price: 20,
+        quantity: 50,
+      });
+
+    sweetId = res.body.id;
+  });
+
+  test("should fail to update sweet (not implemented yet)", async () => {
+    const res = await request(app)
+      .put(`/api/sweets/${sweetId}`)
+      .set("Authorization", `Bearer ${token}`)
+      .send({ price: 25 });
+
+    expect(res.status).toBe(200); // This will fail because endpoint not implemented
+  });
+
+  test("should fail to delete sweet (not implemented yet)", async () => {
+    const res = await request(app)
+      .delete(`/api/sweets/${sweetId}`)
+      .set("Authorization", `Bearer ${token}`);
+
+    expect(res.status).toBe(200); // This will fail because endpoint not implemented
+  });
+
+  test("should require admin for update", async () => {
+    const res = await request(app)
+      .put(`/api/sweets/${sweetId}`)
+      .set("Authorization", `Bearer userToken`) // regular user token
+      .send({ price: 30 });
+
+    expect(res.status).toBe(403); // fail because admin check not implemented
+  });
+
+  test("should require admin for delete", async () => {
+    const res = await request(app)
+      .delete(`/api/sweets/${sweetId}`)
+      .set("Authorization", `Bearer userToken`);
+
+    expect(res.status).toBe(403); // fail because admin check not implemented
+  });
+});
