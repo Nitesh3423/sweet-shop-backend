@@ -10,4 +10,12 @@ export const register = async (req, res, next) => {
   }
 };
 
-
+export const login = async (req, res, next) => {
+  try {
+    const { username, password } = req.body;
+    const token = await authService.loginUser({ username, password });
+    return res.json({ token });
+  } catch (err) {
+    next(err);
+  }
+};
